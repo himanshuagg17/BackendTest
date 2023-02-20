@@ -26,26 +26,47 @@ noteRouter.get("/",async(req,res)=>{
 
 
 //to delete the notes
-noteRouter.delete("/delete/:id",async (req,res)=>{
-    const noteID=req.params.id;
-    await NotesModel.findByIdAndDelete({_id:noteID});
-    res.send("the note was deleted");
+noteRouter.delete("/delete/:id", async (req, res) => {
+    const noteID = req.params.id;
+    const note = await NotesModel.findOne({ "_id": noteID })
+    const userID_note = note.userID;
+    const userID_req = req.body.userID
+    try {
+        if (userID_req !== userID_note) {
+            res.send({ "msg": "You are not Authorized" });
+        } else {
+            await NotesModel.findByIdAndDelete({ _id: noteID });
+            res.send({ "msg": `Note with id ${noteID} has been Deleted` });
+        }
+
+    } catch (error) {
+
+        res.send({ "msg": "unable to delete note", "error": error.message });
+    }
 })
 
-// patch the notes
-noteRouter.patch("/updata/:id",async(req,res)=>{
-    const id=req.params.id;
 
-    const updatedData=req.body;
 
-    try{
-        await NotesModel.findByIdAndUpdate({_id:id},updatedData);
-        console.log("the data has been updated");
-        res.send(updatedData);
+
+noteRouter.patch("/update/:id", async (req, res) => {
+    const payload = req.body;
+    const noteID = req.params.id;
+    const note = await NotesModel.findOne({ "_id": noteID })
+    const userID_note = note.userID;
+    const userID_req = req.body.userID;
+    try {
+        if (userID_req !== userID_note) {
+            res.send({ "msg": "You are not Authorized" });
+        } else {
+            await NotesModel.findByIdAndUpdate({ _id: noteID }, payload);
+            res.send({ "msg": `Note with id ${noteID} has been updated` });
+        }
+
+    } catch (error) {
+
+        res.send({ "msg": "unable to update note", "error": error.message });
     }
-    catch(err){
-        console.log("the data could not be updated");
-    }
+
 })
 
 

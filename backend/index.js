@@ -5,10 +5,11 @@ const {userRouter}=require("./routes/user.routes");
 const {noteRouter} =require("./routes/notes.routes");
 const {authenticate} =require("./middlewares/authenticate");
 const cors=require("cors");
-app.use(cors());
+
 require("dotenv").config();
 
 const app=express();
+app.use(cors());
 
 app.use(express.json());
 
